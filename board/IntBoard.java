@@ -13,7 +13,7 @@ public class IntBoard {
 	public IntBoard() {
 		adjMtx = new HashMap<Integer, ArrayList<Integer>>();
 		for (int i = 0; i < 16; i++) {
-			adjMtx.put(i, null);
+			adjMtx.put(i, new ArrayList<Integer>());
 		}
 	}
 	
@@ -22,11 +22,16 @@ public class IntBoard {
 		for (Integer key : keySet) {
 			if(key >= 4) {
 				adjMtx.get(key).add(key - 4);
-			} if (key < 12) {
+			} 
+			if (key < 12) {
 				adjMtx.get(key).add(key + 4);
-			} if (key%4 != 0) {
+			} 
+			if (key%4 != 0) {
 				adjMtx.get(key).add(key - 1);
 			} 
+			if((key+1) %4 != 0 ){
+				adjMtx.get(key).add(key+1);
+			}
 		}
 	}
 	
@@ -40,9 +45,9 @@ public class IntBoard {
 	}
 	
 	public ArrayList<Integer> getAdjList(int location) {
-		ArrayList<Integer> adjList = new ArrayList<Integer>();
+		//ArrayList<Integer> adjList = new ArrayList<Integer>();
 		
-		return adjList;
+		return adjMtx.get(location);
 	}
 	
 	public int calcIndex(int row, int column) {
