@@ -38,20 +38,20 @@ public class IntBoardTests {
 		Assert.assertEquals(2, testList.size());
 	}
 	
-	/*
+	
 	@Test
 	public void testTargets0_3_2() {
-		board.startTargets(0, 3, 2);
+		board.startTargets(board.calcIndex(0, 3), 2);
 		Set targets= board.getTargets();
 		Assert.assertEquals(3, targets.size());
 		Assert.assertTrue(targets.contains(11));
 		Assert.assertTrue(targets.contains(6));
-		Assert.assertTrue(targets.contains(2));
+		Assert.assertTrue(targets.contains(1));
 	}
 	
 	@Test
 	public void testTargets1_0_1() {
-		board.startTargets(1, 0, 1);
+		board.startTargets(board.calcIndex(1, 0), 1);
 		Set targets= board.getTargets();
 		Assert.assertEquals(3, targets.size());
 		Assert.assertTrue(targets.contains(0));
@@ -61,7 +61,7 @@ public class IntBoardTests {
 	
 	@Test
 	public void testTargets3_1_2() {
-		board.startTargets(3, 1, 2);
+		board.startTargets(board.calcIndex(3, 1), 2);
 		Set targets= board.getTargets();
 		Assert.assertEquals(4, targets.size());
 		Assert.assertTrue(targets.contains(8));
@@ -72,7 +72,7 @@ public class IntBoardTests {
 	
 	@Test
 	public void testTargets1_2_4() {
-		board.startTargets(1, 2, 4);
+		board.startTargets(board.calcIndex(1, 2), 4);
 		Set targets= board.getTargets();
 		Assert.assertEquals(7, targets.size());
 		Assert.assertTrue(targets.contains(11));
@@ -86,7 +86,7 @@ public class IntBoardTests {
 	
 	@Test
 	public void testTargets0_1_2() {
-		board.startTargets(0, 1, 2);
+		board.startTargets(board.calcIndex(0, 1), 2);
 		Set targets= board.getTargets();
 		Assert.assertEquals(4, targets.size());
 		Assert.assertTrue(targets.contains(3));
@@ -97,7 +97,7 @@ public class IntBoardTests {
 	
 	@Test
 	public void testTargets2_2_3() {
-		board.startTargets(2, 2, 3);
+		board.startTargets(board.calcIndex(2, 2), 3);
 		Set targets= board.getTargets();
 		Assert.assertEquals(8, targets.size());
 		Assert.assertTrue(targets.contains(1));
@@ -109,6 +109,6 @@ public class IntBoardTests {
 		Assert.assertTrue(targets.contains(12));
 		Assert.assertTrue(targets.contains(14));
 	}
-	*/
+	
 
 }

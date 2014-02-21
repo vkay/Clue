@@ -4,16 +4,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 
 public class IntBoard {
 	
 	private Map<Integer, ArrayList<Integer>> adjMtx;
+	private boolean[] visited;
+	private Set<Integer> targets = new TreeSet<Integer>();
 	
 	public IntBoard() {
 		adjMtx = new HashMap<Integer, ArrayList<Integer>>();
+		visited = new boolean[16];
 		for (int i = 0; i < 16; i++) {
 			adjMtx.put(i, new ArrayList<Integer>());
+			visited[i] = false;
 		}
 	}
 	
@@ -35,18 +40,32 @@ public class IntBoard {
 		}
 	}
 	
-	public void startTargets(int rows, int columns, int steps) {
-		
+	public void startTargets(int location, int steps) {
+		ArrayList<Integer> adjList = new ArrayList<Integer>();
+		visited[location] = true;
+		for (Integer i: adjMtx.get(location)) {
+			if (!visited[i]) {
+				adjList.add(i);
+			}
+		} 
+		for (Integer i: adjList) {
+			visited[i] = true;
+			if (steps == 1) {
+				targets.add(i);
+			} else {
+				startTargets(i, steps - 1);
+			}
+			visited[i] = false;
+		}
+		visited[location] = false;
 	}
 	
 	public Set<Integer> getTargets() {
-		Set<Integer> targets = new HashSet<Integer>();
+		
 		return targets;
 	}
 	
 	public ArrayList<Integer> getAdjList(int location) {
-		//ArrayList<Integer> adjList = new ArrayList<Integer>();
-		
 		return adjMtx.get(location);
 	}
 	
