@@ -9,6 +9,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.TreeSet;
+
+import board.RoomCell.DoorDirection;
 
 public class Board {
 	
@@ -19,16 +22,35 @@ public class Board {
 	private String legend="legend.txt"; //= "ClueLegend.txt";
 	private String board="clueLayout1.csv"; //= "ClueLayoutBadColumns.csv";//";
 	
-	public Board() {
+	private Map<Integer, ArrayList<Integer>> adjMtx;
+	private boolean[] visited;
+	private Set<BoardCell> targets = new TreeSet<BoardCell>();
+	
+	
+	
+	public Board() throws FileNotFoundException, BadConfigFormatException {
 		rooms = new HashMap<Character, String>();
 		cells = new ArrayList<BoardCell>();
+		adjMtx = new HashMap<Integer, ArrayList<Integer>>();
+		loadConfigFiles();
+		visited = new boolean[numRows * numColumns];
+		for (int i = 0; i < visited.length; i++) {
+			adjMtx.put(i, new ArrayList<Integer>());
+			visited[i] = false;
+		}
 	}
 	
-	public Board(String board, String legend) {
+	public Board(String board, String legend) throws FileNotFoundException, BadConfigFormatException {
 		this.legend = legend;
 		this.board = board;
 		rooms = new HashMap<Character, String>();
 		cells = new ArrayList<BoardCell>();
+		loadConfigFiles();
+		visited = new boolean[numRows * numColumns];
+		for (int i = 0; i < visited.length; i++) {
+			adjMtx.put(i, new ArrayList<Integer>());
+			visited[i] = false;
+		}
 	}
 	
 	public void loadConfigFiles() throws FileNotFoundException, BadConfigFormatException {
@@ -140,18 +162,104 @@ public class Board {
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException, BadConfigFormatException {
-		/*Board board = new Board();
-		board.loadRoomConfig();
+		Board board = new Board();
+		/*board.loadRoomConfig();
 		board.loadBoardConfig();*/
 	}
 
+	/*public IntBoard() {
+		adjMtx = new HashMap<Integer, ArrayList<Integer>>();
+		visited = new boolean[16];
+		for (int i = 0; i < 16; i++) {
+			adjMtx.put(i, new ArrayList<Integer>());
+			visited[i] = false;
+		}
+	}*/
+	
 	public void calcAdjacencies() {
+		Set<Integer> keySet = adjMtx.keySet();
+		for (Integer key : keySet) {
+			if (cells.get(key).isRoom() && !(cells.get(key).isDoorway())) {
+				
+			} else if (cells.get(key).isRoom() && (cells.get(key).isDoorway())) {
+				if(((RoomCell) cells.get(key)).getDoorDirection() == DoorDirection.UP) {
+					adjMtx.get(key).add(key - numColumns);
+				} else if(((RoomCell) cells.get(key)).getDoorDirection() == DoorDirection.DOWN) {
+					adjMtx.get(key).add(key + numColumns);
+				} else if(((RoomCell) cells.get(key)).getDoorDirection() == DoorDirection.LEFT) {
+					adjMtx.get(key).add(key - 1);
+				} else if(((RoomCell) cells.get(key)).getDoorDirection() == DoorDirection.RIGHT) {
+					adjMtx.get(key).add(key + 1);
+				} 
+			} else { 
+				if(key >= numColumns) {
+					if(cells.get(key - numColumns).isRoom() && (((RoomCell) cells.get(key - numColumns)).getDoorDirection() == DoorDirection.DOWN)) {
+						adjMtx.get(key).add(key - numColumns);
+					} else if (cells.get(key - numColumns).isWalkway()) {
+						adjMtx.get(key).add(key - numColumns);
+					} 
+				} 
+				if (key < (keySet.size() - numColumns)) {
+					if(cells.get(key + numColumns).isRoom() && (((RoomCell) cells.get(key + numColumns)).getDoorDirection() == DoorDirection.UP)) {
+						adjMtx.get(key).add(key + numColumns);
+					} else if (cells.get(key + numColumns).isWalkway()) {
+						adjMtx.get(key).add(key + numColumns);
+					}
+				} 
+				if (key%numColumns != 0) {
+					if(cells.get(key - 1).isRoom() && (((RoomCell) cells.get(key - 1)).getDoorDirection() == DoorDirection.RIGHT)) {
+						adjMtx.get(key).add(key - 1);
+					} else if (cells.get(key - 1).isWalkway()) {
+						adjMtx.get(key).add(key - 1);
+					} 
+				} 
+				if((key+1) %numColumns != 0 ){
+					if(cells.get(key + 1).isRoom() && (((RoomCell) cells.get(key + 1)).getDoorDirection() == DoorDirection.LEFT)) {
+						adjMtx.get(key).add(key + 1);
+					} else if (cells.get(key + 1).isWalkway()) {
+						adjMtx.get(key).add(key + 1);
+					} 
+				}
+			}
+		}
+	}
+	
+	public void startTargets(int location, int steps) {
+		ArrayList<Integer> adjList = new ArrayList<Integer>();
+		visited[location] = true;
+		for (Integer i: adjMtx.get(location)) {
+			if (!visited[i]) {
+				adjList.add(i);
+			}
+		} 
+		for (Integer i: adjList) {
+			visited[i] = true;
+			if (steps == 1) {
+				//targets.add(i);
+			} else {
+				startTargets(i, steps - 1);
+			}
+			visited[i] = false;
+		}
+		visited[location] = false;
+	}
+	
+	/*public Set<Integer> getTargets() {
 		
+		return targets;
+	}*/
+	
+	public ArrayList<Integer> getAdjList(int location) {
+		return adjMtx.get(location);
 	}
+	
+	/*public int calcIndex(int row, int column) {
+		return row * 4 + column;
+	}*/
 
-	public ArrayList<Integer> getAdjList(int calcIndex) {
+	/*public ArrayList<Integer> getAdjList(int calcIndex) {
 		return new ArrayList<Integer>();
-	}
+	}*/
 
 	public void calcTargets(int i, int j, int k) {
 		
@@ -159,6 +267,7 @@ public class Board {
 
 	public Set<BoardCell> getTargets() {
 		return new HashSet<BoardCell>();
+		//return targets;
 	}
 	
 }
