@@ -4,15 +4,15 @@ public abstract class BoardCell {
 
 	private int row, column;
 	
-	public boolean isWalkway(int location) {
+	public boolean isWalkway() {
 		return false;
 	}
 	
-	public boolean isRoom(int location) {
+	public boolean isRoom() {
 		return false;
 	}
 	
-	public boolean isDoorway(int location) {
+	public boolean isDoorway() {
 		return false;
 	}
 	

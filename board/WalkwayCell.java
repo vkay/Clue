@@ -3,7 +3,7 @@ package board;
 public class WalkwayCell extends BoardCell {
 
 	@Override 
-	public boolean isWalkway(int location) {
+	public boolean isWalkway() {
 		return true;
 	}
 	

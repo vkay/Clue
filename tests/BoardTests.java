@@ -3,9 +3,17 @@ package tests;
 import static org.junit.Assert.*;
 
 import java.io.FileNotFoundException;
+import java.util.Map;
+
+import junit.framework.Assert;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import board.BadConfigFormatException;
+import board.Board;
+import board.BoardCell;
+import board.RoomCell;
 
 public class BoardTests {
 	// I made this static because I only want to set it up one 
@@ -16,8 +24,8 @@ public class BoardTests {
 		public static final int NUM_COLUMNS = 23;
 		
 		@BeforeClass
-		public static void setUp() {
-			board = new Board("ClueLayout.csv", "ClueLegend.txt");
+		public static void setUp() throws FileNotFoundException, BadConfigFormatException {
+			board = new Board("clueLayout1.csv", "legend.txt");
 			board.loadConfigFiles();
 		}
 		@Test
@@ -47,20 +55,20 @@ public class BoardTests {
 		@Test
 		public void FourDoorDirections() {
 			// Test one each RIGHT/LEFT/UP/DOWN
-			RoomCell room = board.getRoomCellAt(4, 3);
+			RoomCell room = board.getRoomCellAt(2, 5);
 			assertTrue(room.isDoorway());
 			assertEquals(RoomCell.DoorDirection.RIGHT, room.getDoorDirection());
-			room = board.getRoomCellAt(4, 8);
+			room = board.getRoomCellAt(4, 9);
 			assertTrue(room.isDoorway());
 			assertEquals(RoomCell.DoorDirection.DOWN, room.getDoorDirection());
-			room = board.getRoomCellAt(15, 18);
+			room = board.getRoomCellAt(12, 18);
 			assertTrue(room.isDoorway());
 			assertEquals(RoomCell.DoorDirection.LEFT, room.getDoorDirection());
-			room = board.getRoomCellAt(14, 11);
+			room = board.getRoomCellAt(14, 21);
 			assertTrue(room.isDoorway());
 			assertEquals(RoomCell.DoorDirection.UP, room.getDoorDirection());
 			// Test that room pieces that aren't doors know it
-			room = board.getRoomCellAt(14, 14);
+			room = board.getRoomCellAt(0, 1);
 			assertFalse(room.isDoorway());	
 			// Test that walkways are not doors
 			BoardCell cell = board.getCellAt(board.calcIndex(0, 6));
@@ -81,7 +89,7 @@ public class BoardTests {
 				if (cell.isDoorway())
 					numDoors++;
 			}
-			Assert.assertEquals(16, numDoors);
+			Assert.assertEquals(15, numDoors);
 		}
 
 		
@@ -102,8 +110,8 @@ public class BoardTests {
 		@Test
 		public void testRoomInitials() {
 			assertEquals('C', board.getRoomCellAt(0, 0).getInitial());
-			assertEquals('R', board.getRoomCellAt(4, 8).getInitial());
-			assertEquals('B', board.getRoomCellAt(9, 0).getInitial());
+			assertEquals('R', board.getRoomCellAt(1, 10).getInitial());
+			assertEquals('B', board.getRoomCellAt(11, 2).getInitial());
 			assertEquals('O', board.getRoomCellAt(21, 22).getInitial());
 			assertEquals('K', board.getRoomCellAt(21, 0).getInitial());
 		}
