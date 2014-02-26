@@ -21,9 +21,6 @@ public class RoomCell extends BoardCell {
 				doorDirection = DoorDirection.NONE;
 			}
 		}
-		
-		//System.out.println(roomInitial);
-		
 	}
 	
 	@Override

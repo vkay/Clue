@@ -19,12 +19,12 @@ public class Board {
 	private Map<Character, String> rooms;
 	private int numRows;
 	private int numColumns;
-	private String legend="legend.txt"; //= "ClueLegend.txt";
-	private String board="clueLayout1.csv"; //= "ClueLayoutBadColumns.csv";//";
+	private String legend="legend.txt";
+	private String board="clueLayout1.csv";
 	
 	private Map<Integer, ArrayList<Integer>> adjMtx;
 	private boolean[] visited;
-	private Set<BoardCell> targets = new TreeSet<BoardCell>();
+	private Set<BoardCell> targets;
 	
 	
 	
@@ -32,6 +32,7 @@ public class Board {
 		rooms = new HashMap<Character, String>();
 		cells = new ArrayList<BoardCell>();
 		adjMtx = new HashMap<Integer, ArrayList<Integer>>();
+		targets = new HashSet<BoardCell>();
 		loadConfigFiles();
 		visited = new boolean[numRows * numColumns];
 		for (int i = 0; i < visited.length; i++) {
@@ -43,8 +44,10 @@ public class Board {
 	public Board(String board, String legend) throws FileNotFoundException, BadConfigFormatException {
 		this.legend = legend;
 		this.board = board;
+		adjMtx = new HashMap<Integer, ArrayList<Integer>>();
 		rooms = new HashMap<Character, String>();
 		cells = new ArrayList<BoardCell>();
+		targets = new HashSet<BoardCell>();
 		loadConfigFiles();
 		visited = new boolean[numRows * numColumns];
 		for (int i = 0; i < visited.length; i++) {
@@ -91,20 +94,13 @@ public class Board {
 		FileReader reader = new FileReader(legend);
 		Scanner in = new Scanner(reader);
 		while (in.hasNextLine()) {
-			//try {
-				String wholeLine = in.nextLine();
-				String[] separate = wholeLine.split(", ");
-				if (separate.length != 2) {
-					throw new BadConfigFormatException("Inconsistent legend format.");
-				}
-				rooms.put(separate[0].charAt(0), separate[1]);
-			//} catch (BadConfigFormatException e) {
-			//	System.out.println(e.getMessage());
-			//}
+			String wholeLine = in.nextLine();
+			String[] separate = wholeLine.split(", ");
+			if (separate.length != 2) {
+				throw new BadConfigFormatException("Inconsistent legend format.");
+			}
+			rooms.put(separate[0].charAt(0), separate[1]);
 		}
-		//Set<Character> keySet = rooms.keySet();
-		//for (Character key : keySet)
-			//System.out.println(key + ", " + rooms.get(key));
 	}
 
 	//Load room board file
@@ -116,65 +112,36 @@ public class Board {
 		while (in.hasNextLine()) {
 			String wholeLine = in.nextLine();
 			String[] separate = wholeLine.split(",");
-			//try{
-				if (countRow == 0){
-					 numColumns =separate.length;
+			if (countRow == 0){
+				numColumns =separate.length;
+			}
+			if (numColumns != separate.length){
+				throw new BadConfigFormatException("Inconsistent number of columns per row.");
+			}
+			for (String s : separate) {
+				boolean inKey = false;
+				for (Character key : keySet){
+					if( s.charAt(0) == key){
+						inKey = true;
+					}
 				}
-				if (numColumns != separate.length){
-					throw new BadConfigFormatException("Inconsistent number of columns per row.");
+				if (inKey == false){
+					throw new BadConfigFormatException("Incorrect room character.");
 				}
-				for (String s : separate) {
-					//try {
-						boolean inKey = false;
-						for (Character key : keySet){
-							if( s.charAt(0) == key){
-								inKey = true;
-							}
-						}
-						if (inKey == false){
-							throw new BadConfigFormatException("Incorrect room character.");
-						}
-						if (s.equals("W")) {
-							cells.add(new WalkwayCell());
-						//} else if (s.length() != 2) {
-							//cells.add(new RoomCell('n'));
-						} else {
-							cells.add(new RoomCell(s));
-						}	
-					//} 
-					
-					/*catch (BadConfigFormatException e) {
-						System.out.println(e.getMessage());
-					}*/
-				}
-			//}catch(BadConfigFormatException e){
-				//System.out.println(e.getMessage());
-			//}
+				if (s.equals("W")) {
+					cells.add(new WalkwayCell());
+				} else {
+					cells.add(new RoomCell(s));
+				}	
+			}
 			countRow++;
 		}
 		numRows = countRow;
-		
-		//for (BoardCell cell : cells) {
-			//System.out.println(cell + " " + count);
-			//count++;
-		//}
-		//System.out.println(numRows+ " " + numColumns);
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException, BadConfigFormatException {
 		Board board = new Board();
-		/*board.loadRoomConfig();
-		board.loadBoardConfig();*/
 	}
-
-	/*public IntBoard() {
-		adjMtx = new HashMap<Integer, ArrayList<Integer>>();
-		visited = new boolean[16];
-		for (int i = 0; i < 16; i++) {
-			adjMtx.put(i, new ArrayList<Integer>());
-			visited[i] = false;
-		}
-	}*/
 	
 	public void calcAdjacencies() {
 		Set<Integer> keySet = adjMtx.keySet();
@@ -224,7 +191,7 @@ public class Board {
 		}
 	}
 	
-	public void startTargets(int location, int steps) {
+	public void calcTargets(int location, int steps) {
 		ArrayList<Integer> adjList = new ArrayList<Integer>();
 		visited[location] = true;
 		for (Integer i: adjMtx.get(location)) {
@@ -232,42 +199,28 @@ public class Board {
 				adjList.add(i);
 			}
 		} 
+	
 		for (Integer i: adjList) {
 			visited[i] = true;
-			if (steps == 1) {
-				//targets.add(i);
+			if (steps == 1 || cells.get(i).isDoorway()) {
+				targets.add(cells.get(i));
 			} else {
-				startTargets(i, steps - 1);
+				calcTargets(i, steps - 1);
 			}
 			visited[i] = false;
 		}
 		visited[location] = false;
 	}
 	
-	/*public Set<Integer> getTargets() {
-		
-		return targets;
-	}*/
-	
 	public ArrayList<Integer> getAdjList(int location) {
 		return adjMtx.get(location);
 	}
-	
-	/*public int calcIndex(int row, int column) {
-		return row * 4 + column;
-	}*/
-
-	/*public ArrayList<Integer> getAdjList(int calcIndex) {
-		return new ArrayList<Integer>();
-	}*/
-
-	public void calcTargets(int i, int j, int k) {
-		
-	}
 
 	public Set<BoardCell> getTargets() {
-		return new HashSet<BoardCell>();
-		//return targets;
+		Set<BoardCell> temp = new HashSet<BoardCell>(targets);
+		targets.clear();
+		targets = new HashSet<BoardCell>();
+		return temp;
 	}
 	
 }
