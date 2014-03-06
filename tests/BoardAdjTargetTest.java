@@ -18,9 +18,6 @@ public class BoardAdjTargetTest {
 	@BeforeClass
 	public static void setUp() throws FileNotFoundException, BadConfigFormatException {
 		board = new Board();
-		board.loadConfigFiles();
-		board.calcAdjacencies();
-
 	}
 
 	// Ensure that player does not move around within room

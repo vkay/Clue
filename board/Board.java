@@ -39,6 +39,7 @@ public class Board {
 			adjMtx.put(i, new ArrayList<Integer>());
 			visited[i] = false;
 		}
+		calcAdjacencies();
 	}
 	
 	public Board(String board, String legend) throws FileNotFoundException, BadConfigFormatException {
@@ -54,6 +55,7 @@ public class Board {
 			adjMtx.put(i, new ArrayList<Integer>());
 			visited[i] = false;
 		}
+		calcAdjacencies();
 	}
 	
 	public void loadConfigFiles() throws FileNotFoundException, BadConfigFormatException {
@@ -100,6 +102,7 @@ public class Board {
 				throw new BadConfigFormatException("Inconsistent legend format.");
 			}
 			rooms.put(separate[0].charAt(0), separate[1]);
+			
 		}
 	}
 
@@ -136,7 +139,9 @@ public class Board {
 			}
 			countRow++;
 		}
+		
 		numRows = countRow;
+		
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException, BadConfigFormatException {
@@ -147,7 +152,6 @@ public class Board {
 		Set<Integer> keySet = adjMtx.keySet();
 		for (Integer key : keySet) {
 			if (cells.get(key).isRoom() && !(cells.get(key).isDoorway())) {
-				
 			} else if (cells.get(key).isRoom() && (cells.get(key).isDoorway())) {
 				if(((RoomCell) cells.get(key)).getDoorDirection() == DoorDirection.UP) {
 					adjMtx.get(key).add(key - numColumns);
